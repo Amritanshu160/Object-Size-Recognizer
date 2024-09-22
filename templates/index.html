@@ -1,0 +1,72 @@
+<!-- templates/index.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Object Dimension Detection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            text-align: center;
+        }
+        .images-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        .images-preview img {
+            max-width: 200px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Object Dimension Detection</h1>
+        <form id="upload-form">
+            <input type="file" name="files[]" multiple accept="image/*">
+            <button type="submit">Submit</button>
+        </form>
+        <div id="results">
+            <h3>Detected Dimensions</h3>
+            <p id="dimensions"></p>
+            <div class="images-preview" id="images-preview"></div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('upload-form');
+        const dimensionsDisplay = document.getElementById('dimensions');
+        const imagesPreview = document.getElementById('images-preview');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const response = await fetch('/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+            dimensionsDisplay.textContent = `Length: ${data.length.toFixed(2)} px, Width: ${data.width.toFixed(2)} px, Height: ${data.height.toFixed(2)} px, Volume: ${data.volume.toFixed(2)} cubic px`;
+
+            imagesPreview.innerHTML = '';
+            data.images.forEach(imagePath => {
+                const img = document.createElement('img');
+                img.src = imagePath;
+                imagesPreview.appendChild(img);
+            });
+        });
+    </script>
+</body>
+</html>
